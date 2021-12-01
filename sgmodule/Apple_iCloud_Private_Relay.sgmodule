@@ -1,0 +1,34 @@
+#!name= Enable iCloud Private Relay
+#!desc=(BETA) 启用iCloud专用代理，需要Surge 共享网络连接/启用网关模式 给下级设备
+
+[General]
+# > 路由防火墙
+# 包含所有的网络请求
+include-all-networks = true
+
+[Rule]
+# > REJECT AutoNavi Location Services Dispatcher
+DOMAIN,dispatcher.is.autonavi.com,REJECT
+
+# > iCloud 
+DOMAIN,gateway.icloud.com,🌑Proxy
+DOMAIN,metrics.icloud.com,🌑Proxy
+DOMAIN,p102-quota.icloud.com,🌑Proxy
+
+# > iCloud Private Relay
+# https://developer.apple.com/cn/support/prepare-your-network-for-icloud-private-relay/
+# https://mask-api.icloud.com/egress-ip-ranges.csv
+
+# Optimize for Private Relay connections
+AND,((PROTOCOL,UDP),(DEST-PORT,443),(DOMAIN,mask-api.icloud.com)),DIRECT
+AND,((PROTOCOL,UDP),(DEST-PORT,443),(DOMAIN,mask.icloud.com)),DIRECT
+AND,((PROTOCOL,UDP),(DEST-PORT,443),(DOMAIN,mask-h2.icloud.com)),DIRECT
+AND,((PROTOCOL,UDP),(DEST-PORT,443),(IP-CIDR,17.0.0.0/8,no-resolve)),DIRECT
+
+# Allow for network traffic audits
+DOMAIN,mask-api.icloud.com,🌑Proxy
+DOMAIN,mask.icloud.com,🌑Proxy
+DOMAIN,mask-h2.icloud.com,🌑Proxy
+IP-CIDR,17.0.0.0/8,🌑Proxy,no-resolve
+
+
